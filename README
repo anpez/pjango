@@ -1,0 +1,4 @@
+Installation.
+
+You'll need PHP LexerGenerator:
+pear install channel://pear.php.net/PHP_LexerGenerator-0.4.0
