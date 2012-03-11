@@ -2,22 +2,26 @@
 
 class Pjango_parser
 {
-	const TOKEN_WHITESPACE = 1;
+	const TOKEN_VARIABLE_START = 1;
+	const TOKEN_VARIABLE_END = 2;
+	const TOKEN_BLOCK_START = 3;
+	const TOKEN_BLOCK_END = 4;
 
-	const TOKEN_COMMENT_START = 2;
-	const TOKEN_COMMENT_TEXT = 3;
-	const TOKEN_COMMENT_END = 4;
+	const TOKEN_HTML = 5;
 
-	const TOKEN_VARIABLE_START = 5;
-	const TOKEN_VARIABLE_END = 6;
-	const TOKEN_BLOCK_START = 7;
-	const TOKEN_BLOCK_END = 8;
+	const TOKEN_ID = 6;
+	const TOKEN_PIPE = 7;
+	const TOKEN_COLON = 8;
+	const TOKEN_LEFT_BRACKET = 9;
+	const TOKEN_RIGHT_BRACKET = 10;
+	const TOKEN_LEFT_BRACE = 11;
+	const TOKEN_RIGHT_BRACE = 12;
+	const TOKEN_DOT = 13;
+	const TOKEN_ARROW = 14;
 
-	const TOKEN_HTML = 9;
-
-	const TOKEN_ID = 10;
-	const TOKEN_PIPE = 11;
-	const TOKEN_COLON = 12;
+	const TOKEN_SINGLE_QUOTED_STRING = 15;
+	const TOKEN_DOUBLE_QUOTED_STRING = 16;
+	const TOKEN_NUMBER = 17;
 
 	private $_counter;
 	private $_data;
@@ -32,6 +36,7 @@ class Pjango_parser
 	{
 		$this->_data = $data;
 		$this->token_type = NULL;
+		return $this->yylex();
 	}
 
 	/*!lex2php
@@ -46,21 +51,25 @@ class Pjango_parser
 		variable_end = '}}'
 		block_start = '{%'
 		block_end = '%}'
-		comment_start = '{#'
-		comment_end = '#}'
+		comment = /\{#(\\#\}|.|[\r\n])*?#\}/
 		pipe = '|'
 		colon = ':'
-		single_quote = /\x27/
-		double_quote = '"'
+		left_bracket = '['
+		right_bracket = ']'
+		dot = '.'
+		arrow = '->'
+		left_brace = '{'
+		right_brace = '}'
+		single_quoted_string = /\x27(\\\\|\\\x27|.|[\r\n])*?\x27/
+		double_quoted_string = /"(\\\\|\\"|.|[\r\n])*?"/
 
-		escaped_single_quote = /\\\x27/
-		escaped_double_quote = '\\"'
-		escaped_char = /\\[\x00-\xff]/
+		number = /[0-9]+(\.[0-9]+)?/
 
 		whitespace = /[ \t\n\r]+/
 
 		id = @[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*@
 
+		html = /(\{[^%#\{]|[^\{])+/
 		whatever = /[\x00-\xff]/
 	*/
 
@@ -68,71 +77,46 @@ class Pjango_parser
 		// In initial state we prompt whatever until something is found.
 		%statename INITIAL
 
-		whitespace		{$this->token_type = self::TOKEN_WHITESPACE;}
+		variable_start			{$this->token_type = self::TOKEN_VARIABLE_START; $this->yypushstate(self::VARIABLE);}
+		block_start				{$this->token_type = self::TOKEN_BLOCK_START; $this->yypushstate(self::BLOCK);}
+		comment					{return FALSE;}
 
-		variable_start	{$this->token_type = self::TOKEN_VARIABLE_START; $this->yypushstate(self::VARIABLE);}
-		block_start		{$this->token_type = self::TOKEN_BLOCK_START; $this->yypushstate(self::BLOCK);}
-		comment_start	{$this->token_type = self::TOKEN_COMMENT_START; $this->yypushstate(self::COMMENT);}
-
-		whatever		{$this->token_type = self::TOKEN_HTML;}
-	*/
-
-	/*!lex2php
-		// Skip all comments.
-		%statename COMMENT
-
-		comment_end		{$this->token_type = self::TOKEN_COMMENT_END; $this->yypopstate();}
-		whatever		{$this->token_type = self::TOKEN_COMMENT_TEXT;}
+		html					{$this->token_type = self::TOKEN_HTML;}
 	*/
 
 	/*!lex2php
 		// Print variables with filters.
 		%statename VARIABLE
 
-		whitespace		{return FALSE;}
+		whitespace				{return FALSE;}
 
-		id				{$this->token_type = self::TOKEN_ID;}
-		pipe			{$this->token_type = self::TOKEN_PIPE;}
-		colon			{$this->token_type = self::TOKEN_COLON;}
+		variable_end			{$this->token_type = self::TOKEN_VARIABLE_END; $this->yypopstate();}
 
-		single_quote	{$this->yypushstate(self::SINGLE_QUOTED_STRING);}
-		double_quote	{$this->yypushstate(self::DOUBLE_QUOTED_STRING);}
+		id						{$this->token_type = self::TOKEN_ID;}
+		pipe					{$this->token_type = self::TOKEN_PIPE;}
+		colon					{$this->token_type = self::TOKEN_COLON;}
+		left_bracket			{$this->token_type = self::TOKEN_LEFT_BRACKET;}
+		right_bracket			{$this->token_type = self::TOKEN_RIGHT_BRACKET;}
+		dot						{$this->token_type = self::TOKEN_DOT;}
+		arrow					{$this->token_type = self::TOKEN_ARROW;}
+		left_brace				{$this->token_type = self::TOKEN_LEFT_BRACE;}
+		right_brace				{$this->token_type = self::TOKEN_RIGHT_BRACE;}
 
-		variable_end	{$this->yypopstate();}
-
-		whatever		{return FALSE;}
+		single_quoted_string	{$this->token_type = self::TOKEN_SINGLE_QUOTED_STRING;}
+		double_quoted_string	{$this->token_type = self::TOKEN_DOUBLE_QUOTED_STRING;}
+		number					{$this->token_type = self::TOKEN_NUMBER;}
 	*/
 
 	/*!lex2php
 		// Code blocks.
 		%statename BLOCK
 
-		whitespace		{return FALSE;}
+		whitespace				{return FALSE;}
 
-		single_quote	{$this->yypushstate(self::SINGLE_QUOTED_STRING);}
-		double_quote	{$this->yypushstate(self::DOUBLE_QUOTED_STRING);}
+		single_quoted_string	{$this->token_type = self::TOKEN_SINGLE_QUOTED_STRING;}
+		double_quoted_string	{$this->token_type = self::TOKEN_DOUBLE_QUOTED_STRING;}
 
-		block_end		{$this->yypopstate();}
-
-		whatever		{return FALSE;}
-	*/
-
-	/*!lex2php
-		// Single-quoted strings.
-		%statename SINGLE_QUOTED_STRING
-
-		escaped_single_quote	{}
-		single_quote			{$this->yypopstate();}
-
-		whatever				{return FALSE;}
-	*/
-
-	/*!lex2php
-		// Double-quoted strings.
-		%statename DOUBLE_QUOTED_STRING
-
-		escaped_double_quote	{}
-		double_quote			{$this->yypopstate();}
+		block_end				{$this->token_type = self::TOKEN_BLOCK_END; $this->yypopstate();}
 
 		whatever				{return FALSE;}
 	*/
