@@ -2,26 +2,33 @@
 
 class Pjango_parser
 {
-	const TOKEN_VARIABLE_START = 1;
-	const TOKEN_VARIABLE_END = 2;
-	const TOKEN_BLOCK_START = 3;
-	const TOKEN_BLOCK_END = 4;
+	const T_VARIABLE_START = 1;
+	const T_VARIABLE_END = 2;
+	const T_BLOCK_START = 3;
+	const T_BLOCK_END = 4;
 
-	const TOKEN_HTML = 5;
+	const T_HTML = 5;
 
-	const TOKEN_ID = 6;
-	const TOKEN_PIPE = 7;
-	const TOKEN_COLON = 8;
-	const TOKEN_LEFT_BRACKET = 9;
-	const TOKEN_RIGHT_BRACKET = 10;
-	const TOKEN_LEFT_BRACE = 11;
-	const TOKEN_RIGHT_BRACE = 12;
-	const TOKEN_DOT = 13;
-	const TOKEN_ARROW = 14;
+	const T_ID = 6;
+	const T_PIPE = 7;
+	const T_COLON = 8;
+	const T_LEFT_BRACKET = 9;
+	const T_RIGHT_BRACKET = 10;
+	const T_LEFT_BRACE = 11;
+	const T_RIGHT_BRACE = 12;
+	const T_LEFT_PAREN = 13;
+	const T_RIGHT_PAREN = 14;
+	const T_DOT = 15;
+	const T_ARROW = 16;
 
-	const TOKEN_SINGLE_QUOTED_STRING = 15;
-	const TOKEN_DOUBLE_QUOTED_STRING = 16;
-	const TOKEN_NUMBER = 17;
+	const T_SINGLE_QUOTED_STRING = 17;
+	const T_DOUBLE_QUOTED_STRING = 18;
+	const T_NUMBER = 19;
+
+	const T_PLUS = 20;
+	const T_MINUS = 21;
+	const T_MULTIPLICATION = 22;
+	const T_DIVISION = 23;
 
 	private $_counter;
 	private $_data;
@@ -60,6 +67,12 @@ class Pjango_parser
 		arrow = '->'
 		left_brace = '{'
 		right_brace = '}'
+		left_paren = '('
+		right_paren = ')'
+		plus = '+'
+		minus = '-'
+		multiplication = '*'
+		division = '/'
 		single_quoted_string = /\x27(\\\\|\\\x27|.|[\r\n])*?\x27/
 		double_quoted_string = /"(\\\\|\\"|.|[\r\n])*?"/
 
@@ -77,11 +90,11 @@ class Pjango_parser
 		// In initial state we prompt whatever until something is found.
 		%statename INITIAL
 
-		variable_start			{$this->token_type = self::TOKEN_VARIABLE_START; $this->yypushstate(self::VARIABLE);}
-		block_start				{$this->token_type = self::TOKEN_BLOCK_START; $this->yypushstate(self::BLOCK);}
+		variable_start			{$this->token_type = self::T_VARIABLE_START; $this->yypushstate(self::VARIABLE);}
+		block_start				{$this->token_type = self::T_BLOCK_START; $this->yypushstate(self::BLOCK);}
 		comment					{return FALSE;}
 
-		html					{$this->token_type = self::TOKEN_HTML;}
+		html					{$this->token_type = self::T_HTML;}
 	*/
 
 	/*!lex2php
@@ -90,21 +103,27 @@ class Pjango_parser
 
 		whitespace				{return FALSE;}
 
-		variable_end			{$this->token_type = self::TOKEN_VARIABLE_END; $this->yypopstate();}
+		variable_end			{$this->token_type = self::T_VARIABLE_END; $this->yypopstate();}
 
-		id						{$this->token_type = self::TOKEN_ID;}
-		pipe					{$this->token_type = self::TOKEN_PIPE;}
-		colon					{$this->token_type = self::TOKEN_COLON;}
-		left_bracket			{$this->token_type = self::TOKEN_LEFT_BRACKET;}
-		right_bracket			{$this->token_type = self::TOKEN_RIGHT_BRACKET;}
-		dot						{$this->token_type = self::TOKEN_DOT;}
-		arrow					{$this->token_type = self::TOKEN_ARROW;}
-		left_brace				{$this->token_type = self::TOKEN_LEFT_BRACE;}
-		right_brace				{$this->token_type = self::TOKEN_RIGHT_BRACE;}
+		id						{$this->token_type = self::T_ID;}
+		pipe					{$this->token_type = self::T_PIPE;}
+		colon					{$this->token_type = self::T_COLON;}
+		left_bracket			{$this->token_type = self::T_LEFT_BRACKET;}
+		right_bracket			{$this->token_type = self::T_RIGHT_BRACKET;}
+		dot						{$this->token_type = self::T_DOT;}
+		arrow					{$this->token_type = self::T_ARROW;}
+		left_brace				{$this->token_type = self::T_LEFT_BRACE;}
+		right_brace				{$this->token_type = self::T_RIGHT_BRACE;}
+		left_paren				{$this->token_type = self::T_LEFT_PAREN;}
+		right_paren				{$this->token_type = self::T_RIGHT_PAREN;}
+		plus					{$this->token_type = self::T_PLUS;}
+		minus					{$this->token_type = self::T_MINUS;}
+		multiplication			{$this->token_type = self::T_MULTIPLICATION;}
+		division				{$this->token_type = self::T_DIVISION;}
 
-		single_quoted_string	{$this->token_type = self::TOKEN_SINGLE_QUOTED_STRING;}
-		double_quoted_string	{$this->token_type = self::TOKEN_DOUBLE_QUOTED_STRING;}
-		number					{$this->token_type = self::TOKEN_NUMBER;}
+		single_quoted_string	{$this->token_type = self::T_SINGLE_QUOTED_STRING;}
+		double_quoted_string	{$this->token_type = self::T_DOUBLE_QUOTED_STRING;}
+		number					{$this->token_type = self::T_NUMBER;}
 	*/
 
 	/*!lex2php
@@ -113,10 +132,10 @@ class Pjango_parser
 
 		whitespace				{return FALSE;}
 
-		single_quoted_string	{$this->token_type = self::TOKEN_SINGLE_QUOTED_STRING;}
-		double_quoted_string	{$this->token_type = self::TOKEN_DOUBLE_QUOTED_STRING;}
+		single_quoted_string	{$this->token_type = self::T_SINGLE_QUOTED_STRING;}
+		double_quoted_string	{$this->token_type = self::T_DOUBLE_QUOTED_STRING;}
 
-		block_end				{$this->token_type = self::TOKEN_BLOCK_END; $this->yypopstate();}
+		block_end				{$this->token_type = self::T_BLOCK_END; $this->yypopstate();}
 
 		whatever				{return FALSE;}
 	*/

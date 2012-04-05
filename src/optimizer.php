@@ -21,29 +21,29 @@
 
 class Pjango_optimizer
 {
-	public static function optimize($quads)
+	public static function optimize($code)
 	{
 		$optimized = array();
 
-		$count = count($quads);
+		$count = count($code);
 		for ($i = 0; $i < $count; ++$i)
 		{
-			$quad = $quads[$i];
-			switch($quad[0])
+			$line = $code[$i];
+			switch($line[0])
 			{
-				case Pjango_compiler::QUAD_HTML:
-					$tmp = $quad[1];
+				case Pjango_compiler::CODE_HTML:
+					$tmp = $line[1];
 					++$i;
-					while($i < $count && Pjango_compiler::QUAD_HTML == $quads[$i][0])
+					while($i < $count && Pjango_compiler::CODE_HTML == $code[$i][0])
 					{
-						$tmp .= $quads[$i][1];
+						$tmp .= $code[$i][1];
 						++$i;
 					}
 					--$i;
-					$optimized[] = array(Pjango_compiler::QUAD_HTML, $tmp, NULL, NULL);
+					$optimized[] = array(Pjango_compiler::CODE_HTML, $tmp, NULL, NULL);
 					break;
-				default:	// By default, just copy the quad as is.
-					$optimized[] = $quad;
+				default:	// By default, just copy the line as is.
+					$optimized[] = $line;
 			}
 		}
 

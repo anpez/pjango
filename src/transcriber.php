@@ -21,114 +21,52 @@
 
 class Pjango_transcriber
 {
-	public static function debug($quads)
+	public static function debug($code)
 	{
 		$reflection = new ReflectionClass('Pjango_compiler');
 
 		$consts = array();
 		foreach($reflection->getConstants() as $const => $value)
 		{
-			if (0 === strpos($const, 'QUAD_'))
+			if (0 === strpos($const, 'CODE_'))
 			{
 				$consts[$value] = $const;
 			}
 		}
-		foreach($quads as $quad)
+		foreach($code as $line)
 		{
-			printf("%-20s%20s%20s%20s\n", $consts[$quad[0]], var_export($quad[1], TRUE), var_export($quad[2], TRUE), var_export($quad[3], TRUE));
+			printf("%-20s%20s%20s%20s\n", $consts[$line[0]], var_export($line[1], TRUE), var_export($line[2], TRUE), var_export($line[3], TRUE));
 		}
 	}
 
-	public static function transcribe($quads)
+	public static function transcribe($code)
 	{
-		$count = count($quads);
+		$count = count($code);
 		for ($i = 0; $i < $count; ++$i)
 		{
-			switch($quads[$i][0])
+			switch($code[$i][0])
 			{
-				case Pjango_compiler::QUAD_HTML:
-					echo $quads[$i][1];
+				case Pjango_compiler::CODE_HTML:
+					echo $code[$i][1];
 					break;
-				case Pjango_compiler::QUAD_VARIABLE_START:
-					$tmp = '';
-					$var = '$'.$quads[++$i][1];
-					while(++$i < $count)
+				case Pjango_compiler::CODE_VARIABLE:
+					$var = $code[$i][1];
+					$functions = $code[$i][2];
+					$gen_code = $var;
+					foreach($functions as $function)
 					{
-						switch($quads[$i][0])
+						$gen_code = $function['name'].'('.$gen_code;
+						if ($function['params'])
 						{
-							case Pjango_compiler::QUAD_DOT:
-								$var .= '->';
-								break;
-							case Pjango_compiler::QUAD_LEFT_BRACKET:
-								$var .= '[';
-								break;
-							case Pjango_compiler::QUAD_RIGHT_BRACKET:
-								$var .= ']';
-								break;
-							case Pjango_compiler::QUAD_STRING:
-							case Pjango_compiler::QUAD_NUMBER:
-							case Pjango_compiler::QUAD_MEMBER:
-								$var .= $quads[$i][1];
-								break;
-							case Pjango_compiler::QUAD_VAR:
-								$var .= '$'.$quads[$i][1];
-								break;
-							default:
-								break(2);
+							$gen_code .= ', '.implode(', ', $function['params']);
 						}
+						$gen_code .= ')';
 					}
-					$tmp = $var;
-					while(Pjango_compiler::QUAD_FUNCTION == $quads[$i][0])
-					{
-						$tmp = $quads[$i][1].'('.$tmp;
-						$params = array();
-						while(++$i < $count)
-						{
-							if (Pjango_compiler::QUAD_PARAMETER_START != $quads[$i][0])
-							{
-								break;
-							}
-							++$i;
-							$var = '';
-							while(Pjango_compiler::QUAD_PARAMETER_END != $quads[$i][0])
-							{
-								switch($quads[$i][0])
-								{
-									case Pjango_compiler::QUAD_DOT:
-										$var .= '->';
-										break;
-									case Pjango_compiler::QUAD_LEFT_BRACKET:
-										$var .= '[';
-										break;
-									case Pjango_compiler::QUAD_RIGHT_BRACKET:
-										$var .= ']';
-										break;
-									case Pjango_compiler::QUAD_NUMBER:
-									case Pjango_compiler::QUAD_STRING:
-									case Pjango_compiler::QUAD_MEMBER:
-										$var .= $quads[$i][1];
-										break;
-									case Pjango_compiler::QUAD_VAR:
-										$var .= '$'.$quads[$i][1];
-										break;
-									default:
-										break(2);
-								}
-								++$i;
-							}
-							if ('' != $var)
-							{
-								$params[] = $var;
-							}
-						}
-						if ($params) $tmp .= ', '.implode(', ', $params);
-						$tmp .= ')';
-					}
-					echo $tmp;
+					echo $gen_code;
 					break;
 				default:
-					echo 'Unexpected quad: ';
-					self::debug(array($quads[$i]));
+					echo 'Unexpected code: ';
+					self::debug(array($code[$i]));
 			}
 		}
 	}

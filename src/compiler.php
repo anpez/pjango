@@ -25,27 +25,15 @@ require(__DIR__.'/transcriber.php');
 
 class Pjango_compiler
 {
-	const QUAD_HTML				= 0;
-	const QUAD_VARIABLE_START	= 1;
-	const QUAD_VARIABLE_END		= 2;
-	const QUAD_VAR				= 3;
-	const QUAD_LEFT_BRACKET		= 4;
-	const QUAD_RIGHT_BRACKET	= 5;
-	const QUAD_DOT				= 6;
-	const QUAD_LEFT_BRACE		= 7;
-	const QUAD_RIGHT_BRACE		= 8;
-
-	const QUAD_STRING			= 9;
-	const QUAD_NUMBER			= 10;
-	const QUAD_MEMBER			= 11;
-	const QUAD_FUNCTION			= 12;
-	const QUAD_PARAMETER_START	= 13;
-	const QUAD_PARAMETER_END	= 14;
-
-	const QUAD_EOF				= 20;
+	const CODE_HTML		= 0;
+	const CODE_VARIABLE	= 1;
 
 	private $_parser;
-	private $_quads;
+	private $_expressions;
+	private $_expression_level;
+	private $_function;
+	private $_parameters;
+	private $_code;
 	private $_errors;
 
  	public function __construct()
@@ -58,9 +46,9 @@ class Pjango_compiler
 		return $this->_parser->yylex();
 	}
 
-	private function _quad($type, $arg1 = NULL, $arg2 = NULL, $res = NULL)
+	private function _code($type, $_ = NULL)
 	{
-		$this->_quads[] = array($type, $arg1, $arg2, $res);
+		$this->_code[] = func_get_args();
 	}
 
 	private function _error($msg)
@@ -68,7 +56,7 @@ class Pjango_compiler
 		$this->_errors[] = array($this->_parser->lineno, $this->_parser->token_type, $this->_parser->value, $msg);
 	}
 
-	private function _print_quads()
+	private function _print_code()
 	{
 		if ($this->_errors)
 		{
@@ -78,18 +66,20 @@ class Pjango_compiler
 			}
 		}
 
-		$quads = Pjango_optimizer::optimize($this->_quads);
-//		echo "quads\n";
-//		Pjango_transcriber::debug($this->_quads);
-//		echo "optimized quads\n";
-//		Pjango_transcriber::debug($quads);
-		Pjango_transcriber::transcribe($quads);
+		$code = Pjango_optimizer::optimize($this->_code);
+//		echo "code\n";
+//		Pjango_transcriber::debug($this->_code);
+//		echo "optimized code\n";
+//		Pjango_transcriber::debug($code);
+		Pjango_transcriber::transcribe($code);
 	}
 
 	public function compile($file)
 	{
-		$this->_quads = array();
+		$this->_code = array();
 		$this->_errors = array();
+		$this->_expressions = array();
+		$this->_expression_level = -1;
 
 		try
 		{
@@ -98,14 +88,14 @@ class Pjango_compiler
 			{
 				switch($this->_parser->token_type)
 				{
-					case Pjango_parser::TOKEN_HTML:
-						$this->_quad(self::QUAD_HTML, $this->_parser->value);
+					case Pjango_parser::T_HTML:
+						$this->_code(self::CODE_HTML, $this->_parser->value);
 						$continue = $this->_next();
 						break;
-					case Pjango_parser::TOKEN_VARIABLE_START:
+					case Pjango_parser::T_VARIABLE_START:
 						$continue = $this->_parse_variable();
 						break;
-					case Pjango_parser::TOKEN_BLOCK_START:
+					case Pjango_parser::T_BLOCK_START:
 						$continue = $this->_parse_block();
 						break;
 					default:
@@ -113,7 +103,7 @@ class Pjango_compiler
 						$continue = $this->_next();
 				}
 			}
-			$this->_print_quads();
+			$this->_print_code();
 		}
 		catch(Exception $e)
 		{
@@ -123,32 +113,110 @@ class Pjango_compiler
 
 	private function _parse_expression()
 	{
+		$code = '';
+
+		$res = FALSE;
 		switch($this->_parser->token_type)
 		{
-			case Pjango_parser::TOKEN_ID:
-				return $this->_parse_variable_name();
-			case Pjango_parser::TOKEN_SINGLE_QUOTED_STRING:
-			case Pjango_parser::TOKEN_DOUBLE_QUOTED_STRING:
-				$this->_quad(self::QUAD_STRING, $this->_parser->value);
+			case Pjango_parser::T_LEFT_PAREN:
+				$code .= '(';
+				$res = $this->_next();
+				if (!$res)
+				{
+					$this->_error('Unexpected EOF');
+					return FALSE;
+				}
+
+				++$this->_expression_level;
+				$this->_expressions[] = '';
+				$res = $this->_parse_expression();
+				if (!$res)
+				{
+					return FALSE;
+				}
+				$code .= array_pop($this->_expressions);
+				--$this->_expression_level;
+				if (Pjango_parser::T_RIGHT_PAREN != $this->_parser->token_type)
+				{
+					$this->_error('Expecting )');
+					return FALSE;
+				}
+				$code .= ')';
+
+				$res = $this->_next();
+				if (!$res)
+				{
+					return FALSE;
+				}
 				break;
-			case Pjango_parser::TOKEN_NUMBER:
-				$this->_quad(self::QUAD_NUMBER, $this->_parser->value);
+			case Pjango_parser::T_ID:
+				++$this->_expression_level;
+				$this->_expressions[] = '';
+				$res = $this->_parse_variable_name();
+				if (!$res)
+				{
+					return FALSE;
+				}
+				$code .= array_pop($this->_expressions);
+				--$this->_expression_level;
+				break;
+			case Pjango_parser::T_SINGLE_QUOTED_STRING:
+			case Pjango_parser::T_DOUBLE_QUOTED_STRING:
+			case Pjango_parser::T_NUMBER:
+				$code .= $this->_parser->value;
+				$res = $this->_next();
+				if (!$res)
+				{
+					$this->_error('Unexpected EOF');
+					return FALSE;
+				}
 				break;
 			default:
 				$this->_error('Expecting expression');
+				return FALSE;
 		}
-		return $this->_next();
+
+		switch($this->_parser->token_type)
+		{
+			case Pjango_parser::T_PLUS:
+			case Pjango_parser::T_MINUS:
+			case Pjango_parser::T_MULTIPLICATION:
+			case Pjango_parser::T_DIVISION:
+				$code .= $this->_parser->value;
+
+				$res = $this->_next();
+				if (!$res)
+				{
+					$this->_error('Unexpected EOF');
+					return FALSE;
+				}
+
+				++$this->_expression_level;
+				$this->_expressions[] = '';
+				$res = $this->_parse_expression();
+				if (!$res)
+				{
+					return FALSE;
+				}
+				$code .= array_pop($this->_expressions);
+				--$this->_expression_level;
+				break;
+		}
+
+		$this->_expressions[$this->_expression_level] .= $code;
+
+		return $res;
 	}
 
 	private function _parse_variable_name()
 	{
-		if (Pjango_parser::TOKEN_ID != $this->_parser->token_type)
+		if (Pjango_parser::T_ID != $this->_parser->token_type)
 		{
 			$this->_error('Expecting ID');
 			return FALSE;
 		}
 
-		$this->_quad(self::QUAD_VAR, $this->_parser->value);
+		$code = '$'.$this->_parser->value;
 		$res = $this->_next();
 		if (!$res)
 		{
@@ -160,64 +228,74 @@ class Pjango_compiler
 		{
 			switch($this->_parser->token_type)
 			{
-				case Pjango_parser::TOKEN_LEFT_BRACKET:
-					$this->_quad(self::QUAD_LEFT_BRACKET);
+				case Pjango_parser::T_LEFT_BRACKET:
+					$code .= '[';
+
 					if (!$this->_next())
 					{
 						$this->_error('Expecting expression');
 						return FALSE;
 					}
 
+					++$this->_expression_level;
+					$this->_expressions[] = '';
 					if (!$this->_parse_expression())
 					{
 						return FALSE;
 					}
+					$code .= array_pop($this->_expressions);
+					--$this->_expression_level;
 
-					if (Pjango_parser::TOKEN_RIGHT_BRACKET != $this->_parser->token_type)
+					if (Pjango_parser::T_RIGHT_BRACKET != $this->_parser->token_type)
 					{
 						$this->_error('Expecting ]');
 						return FALSE;
 					}
-
-					$this->_quad(self::QUAD_RIGHT_BRACKET);
+					$code .= ']';
 					break;
-				case Pjango_parser::TOKEN_LEFT_BRACE:
-					$this->_quad(self::QUAD_LEFT_BRACE);
+				case Pjango_parser::T_LEFT_BRACE:
+					$code .= '{';
+
 					if (!$this->_next())
 					{
 						$this->_error('Expecting expression');
 						return FALSE;
 					}
 
+					++$this->_expression_level;
+					$this->_expressions[] = '';
 					if (!$this->_parse_expression())
 					{
 						return FALSE;
 					}
+					$code .= array_pop($this->_expressions);
+					--$this->_expression_level;
 
-					if (Pjango_parser::TOKEN_RIGHT_BRACE != $this->_parser->token_type)
+					if (Pjango_parser::T_RIGHT_BRACE != $this->_parser->token_type)
 					{
 						$this->_error('Expecting }');
 						return FALSE;
 					}
 
-					$this->_quad(self::QUAD_RIGHT_BRACE);
+					$code .= '}';
 					break;
-				case Pjango_parser::TOKEN_DOT:
-				case Pjango_parser::TOKEN_ARROW:
-					$this->_quad(self::QUAD_DOT);
+				case Pjango_parser::T_DOT:
+				case Pjango_parser::T_ARROW:
+					$code .= '->';
+
 					if (!$this->_next())
 					{
 						$this->_error('Expecting id');
 						return FALSE;
 					}
 
-					if (Pjango_parser::TOKEN_ID != $this->_parser->token_type)
+					if (Pjango_parser::T_ID != $this->_parser->token_type)
 					{
 						$this->_error('Expecting id');
 						return FALSE;
 					}
 
-					$this->_quad(self::QUAD_MEMBER, $this->_parser->value);
+					$code .= $this->_parser->value;
 					break;
 				default:
 					break(2);
@@ -225,12 +303,14 @@ class Pjango_compiler
 			$res = $this->_next();
 		}
 
+		$this->_expressions[$this->_expression_level] .= $code;
+
 		return $res;
 	}
 
 	private function _parse_parameters()
 	{
-		if (Pjango_parser::TOKEN_COLON != $this->_parser->token_type)
+		if (Pjango_parser::T_COLON != $this->_parser->token_type)
 		{
 			return TRUE;
 		}
@@ -241,55 +321,58 @@ class Pjango_compiler
 			return FALSE;
 		}
 
-		$this->_quad(self::QUAD_PARAMETER_START);
-
+		++$this->_expression_level;
+		$this->_expressions[] = '';
 		if (!$this->_parse_expression())
 		{
 			return FALSE;
 		}
-
-		$this->_quad(self::QUAD_PARAMETER_END);
+		$this->_parameters[] = array_pop($this->_expressions);
+		--$this->_expression_level;
 
 		return $this->_parse_parameters();
 	}
 
 	private function _parse_function_call()
 	{
-		if (Pjango_parser::TOKEN_ID != $this->_parser->token_type)
+		if (Pjango_parser::T_ID != $this->_parser->token_type)
 		{
 			$this->_error('Expecting ID');
 			return FALSE;
 		}
 
-		$this->_quad(self::QUAD_FUNCTION, $this->_parser->value);
-
+		$this->_function = $this->_parser->value;
 		if (!$this->_next())
 		{
 			$this->_error('Unexpected EOF');
 			return FALSE;
 		}
 
+		$this->_parameters = array();
 		return $this->_parse_parameters();
 	}
 
 	private function _parse_variable()
 	{
-		$this->_quad(self::QUAD_VARIABLE_START);
-
 		if (!$this->_next())
 		{
 			$this->_error('Unexpected EOF');
 			return FALSE;
 		}
 
+		++$this->_expression_level;
+		$this->_expressions[] = '';
 		if (!$this->_parse_variable_name())
 		{
 			return FALSE;
 		}
+		$var = array_pop($this->_expressions);
+		--$this->_expression_level;
 
-		while(Pjango_parser::TOKEN_VARIABLE_END != $this->_parser->token_type)
+		$functions = array();
+		while(Pjango_parser::T_VARIABLE_END != $this->_parser->token_type)
 		{
-			if (Pjango_parser::TOKEN_PIPE != $this->_parser->token_type)
+			if (Pjango_parser::T_PIPE != $this->_parser->token_type)
 			{
 				$this->_error('Expecting |');
 				return FALSE;
@@ -301,13 +384,15 @@ class Pjango_compiler
 				return FALSE;
 			}
 
+			$this->_function = '';
 			if (!$this->_parse_function_call())
 			{
 				return FALSE;
 			}
+			$functions[] = array('name' => $this->_function, 'params' => $this->_parameters);
 		}
 
-		$this->_quad(self::QUAD_VARIABLE_END);
+		$this->_code(self::CODE_VARIABLE, $var, $functions);
 
 		return TRUE;
 	}
