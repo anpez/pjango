@@ -1,34 +1,54 @@
 <?php
 
-class Pjango_parser
+class Pjango_lexer
 {
-	const T_VARIABLE_START = 1;
-	const T_VARIABLE_END = 2;
-	const T_BLOCK_START = 3;
-	const T_BLOCK_END = 4;
+	const T_HTML					= 1;
 
-	const T_HTML = 5;
+	const T_VARIABLE_START			= 100;
+	const T_VARIABLE_END			= 101;
+	const T_BLOCK_START				= 102;
+	const T_BLOCK_END				= 103;
 
-	const T_ID = 6;
-	const T_PIPE = 7;
-	const T_COLON = 8;
-	const T_LEFT_BRACKET = 9;
-	const T_RIGHT_BRACKET = 10;
-	const T_LEFT_BRACE = 11;
-	const T_RIGHT_BRACE = 12;
-	const T_LEFT_PAREN = 13;
-	const T_RIGHT_PAREN = 14;
-	const T_DOT = 15;
-	const T_ARROW = 16;
+	const T_PLUS					= 200;
+	const T_MINUS					= 201;
+	const T_MULTIPLICATION			= 202;
+	const T_DIVISION				= 203;
+	const T_MODULUS					= 204;
 
-	const T_SINGLE_QUOTED_STRING = 17;
-	const T_DOUBLE_QUOTED_STRING = 18;
-	const T_NUMBER = 19;
+	const T_AND						= 300;
+	const T_OR						= 301;
+	const T_XOR						= 302;
+	const T_NOT_INX					= 303;
+	const T_NOT_IN					= 304;
+	const T_NOT						= 305;
+	const T_INX						= 306;
+	const T_IN						= 307;
+	const T_QUESTION				= 308;
 
-	const T_PLUS = 20;
-	const T_MINUS = 21;
-	const T_MULTIPLICATION = 22;
-	const T_DIVISION = 23;
+	const T_LT						= 400;
+	const T_LE						= 401;
+	const T_GT						= 402;
+	const T_GE						= 403;
+	const T_EQ						= 404;
+	const T_NE						= 405;
+	const T_EX						= 406;
+	const T_NX						= 407;
+
+	const T_ID						= 500;
+	const T_PIPE					= 501;
+	const T_COLON					= 502;
+	const T_LEFT_BRACKET			= 503;
+	const T_RIGHT_BRACKET			= 504;
+	const T_LEFT_BRACE				= 505;
+	const T_RIGHT_BRACE				= 506;
+	const T_LEFT_PAREN				= 507;
+	const T_RIGHT_PAREN				= 508;
+	const T_DOT						= 509;
+	const T_ARROW					= 510;
+
+	const T_SINGLE_QUOTED_STRING	= 600;
+	const T_DOUBLE_QUOTED_STRING	= 601;
+	const T_NUMBER					= 602;
 
 	private $_counter;
 	private $_data;
@@ -53,12 +73,25 @@ class Pjango_parser
 		%value {$this->value}
 		%line {$this->lineno}
 
-		// Tokens
+		// Blocks
 		variable_start = '{{'
 		variable_end = '}}'
 		block_start = '{%'
 		block_end = '%}'
 		comment = /\{#(\\#\}|.|[\r\n])*?#\}/
+
+		// Logic operators
+		and = /(&&|and|AND)/
+		or = /(\|\||or|OR)/
+		xor = /(xor|XOR)/
+		not_inx = /(not inx|NOT INX)/
+		not_in = /(not in|NOT IN)/
+		not = /(!|not|NOT)/
+		inx = /(inx|INX)/
+		in = /(in|IN)/
+
+		question = '?'
+
 		pipe = '|'
 		colon = ':'
 		left_bracket = '['
@@ -69,10 +102,24 @@ class Pjango_parser
 		right_brace = '}'
 		left_paren = '('
 		right_paren = ')'
+
+		// Operators
 		plus = '+'
 		minus = '-'
 		multiplication = '*'
 		division = '/'
+		modulus = '%'
+
+		// Comparators
+		lt = '<'
+		le = '<='
+		gt = '>'
+		ge = '>='
+		eq = '=='
+		ne = /<>|!=/
+		ex = '==='
+		nx = '!=='
+
 		single_quoted_string = /\x27(\\\\|\\\x27|.|[\r\n])*?\x27/
 		double_quoted_string = /"(\\\\|\\"|.|[\r\n])*?"/
 
@@ -105,7 +152,17 @@ class Pjango_parser
 
 		variable_end			{$this->token_type = self::T_VARIABLE_END; $this->yypopstate();}
 
-		id						{$this->token_type = self::T_ID;}
+		and						{$this->token_type = self::T_AND;}
+		or						{$this->token_type = self::T_OR;}
+		xor						{$this->token_type = self::T_XOR;}
+		not_inx					{$this->token_type = self::T_NOT_INX;}
+		not_in					{$this->token_type = self::T_NOT_IN;}
+		not						{$this->token_type = self::T_NOT;}
+		inx						{$this->token_type = self::T_INX;}
+		in						{$this->token_type = self::T_IN;}
+
+		question				{$this->token_type = self::T_QUESTION;}
+
 		pipe					{$this->token_type = self::T_PIPE;}
 		colon					{$this->token_type = self::T_COLON;}
 		left_bracket			{$this->token_type = self::T_LEFT_BRACKET;}
@@ -116,14 +173,27 @@ class Pjango_parser
 		right_brace				{$this->token_type = self::T_RIGHT_BRACE;}
 		left_paren				{$this->token_type = self::T_LEFT_PAREN;}
 		right_paren				{$this->token_type = self::T_RIGHT_PAREN;}
+
 		plus					{$this->token_type = self::T_PLUS;}
 		minus					{$this->token_type = self::T_MINUS;}
 		multiplication			{$this->token_type = self::T_MULTIPLICATION;}
 		division				{$this->token_type = self::T_DIVISION;}
+		modulus					{$this->token_type = self::T_MODULUS;}
+
+		le						{$this->token_type = self::T_LE;}
+		lt						{$this->token_type = self::T_LT;}
+		ge						{$this->token_type = self::T_GE;}
+		gt						{$this->token_type = self::T_GT;}
+		ex						{$this->token_type = self::T_EX;}
+		nx						{$this->token_type = self::T_NX;}
+		eq						{$this->token_type = self::T_EQ;}
+		ne						{$this->token_type = self::T_NE;}
 
 		single_quoted_string	{$this->token_type = self::T_SINGLE_QUOTED_STRING;}
 		double_quoted_string	{$this->token_type = self::T_DOUBLE_QUOTED_STRING;}
 		number					{$this->token_type = self::T_NUMBER;}
+
+		id						{$this->token_type = self::T_ID;}
 	*/
 
 	/*!lex2php

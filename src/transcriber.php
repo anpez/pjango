@@ -50,19 +50,7 @@ class Pjango_transcriber
 					echo $code[$i][1];
 					break;
 				case Pjango_compiler::CODE_VARIABLE:
-					$var = $code[$i][1];
-					$functions = $code[$i][2];
-					$gen_code = $var;
-					foreach($functions as $function)
-					{
-						$gen_code = $function['name'].'('.$gen_code;
-						if ($function['params'])
-						{
-							$gen_code .= ', '.implode(', ', $function['params']);
-						}
-						$gen_code .= ')';
-					}
-					echo $gen_code;
+					echo $code[$i][1];
 					break;
 				default:
 					echo 'Unexpected code: ';
