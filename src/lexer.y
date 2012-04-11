@@ -27,6 +27,8 @@ class Pjango_lexer
 	const T_VARIABLE_END			= 101;
 	const T_BLOCK_START				= 102;
 	const T_BLOCK_END				= 103;
+	const T_BLOCK					= 104;
+	const T_ENDBLOCK				= 105;
 
 	const T_PLUS					= 200;
 	const T_MINUS					= 201;
@@ -69,6 +71,10 @@ class Pjango_lexer
 	const T_DOUBLE_QUOTED_STRING	= 601;
 	const T_NUMBER					= 602;
 
+	const T_EXTENDS					= 700;
+	const T_COMMENT					= 701;
+	const T_ENDCOMMENT				= 702;
+
 	private $_counter;
 	private $_data;
 	private $_token;
@@ -86,70 +92,76 @@ class Pjango_lexer
 	}
 
 	/*!lex2php
-		%counter {$this->_counter}
-		%input {$this->_data}
-		%token {$this->_token}
-		%value {$this->value}
-		%line {$this->lineno}
+		%counter				{$this->_counter}
+		%input					{$this->_data}
+		%token					{$this->_token}
+		%value					{$this->value}
+		%line					{$this->lineno}
 
 		// Blocks
-		variable_start = '{{'
-		variable_end = '}}'
-		block_start = '{%'
-		block_end = '%}'
-		comment = /\{#(\\#\}|.|[\r\n])*?#\}/
+		variable_start			= '{{'
+		variable_end			= '}}'
+		block_start				= '{%'
+		block_end				= '%}'
+		comment_block			= /\{#(\\#\}|.|[\r\n])*?#\}/
 
 		// Logic operators
-		and = /(&&|and|AND)/
-		or = /(\|\||or|OR)/
-		xor = /(xor|XOR)/
-		not_inx = /(not inx|NOT INX)/
-		not_in = /(not in|NOT IN)/
-		not = /(!|not|NOT)/
-		inx = /(inx|INX)/
-		in = /(in|IN)/
+		and						= /(&&|and|AND)/
+		or						= /(\|\||or|OR)/
+		xor						= /(xor|XOR)/
+		not_inx					= /(not inx|NOT INX)/
+		not_in					= /(not in|NOT IN)/
+		not						= /(!|not|NOT)/
+		inx						= /(inx|INX)/
+		in						= /(in|IN)/
 
-		question = '?'
+		question				= '?'
 
-		pipe = '|'
-		colon = ':'
-		left_bracket = '['
-		right_bracket = ']'
-		dot = '.'
-		arrow = '->'
-		left_brace = '{'
-		right_brace = '}'
-		left_paren = '('
-		right_paren = ')'
+		pipe					= '|'
+		colon					= ':'
+		left_bracket			= '['
+		right_bracket			= ']'
+		dot						= '.'
+		arrow					= '->'
+		left_brace				= '{'
+		right_brace				= '}'
+		left_paren				= '('
+		right_paren				= ')'
 
 		// Operators
-		plus = '+'
-		minus = '-'
-		multiplication = '*'
-		division = '/'
-		modulus = '%'
+		plus					= '+'
+		minus					= '-'
+		multiplication			= '*'
+		division				= '/'
+		modulus					= '%'
 
 		// Comparators
-		lt = '<'
-		le = '<='
-		gt = '>'
-		ge = '>='
-		eq = '=='
-		ne = /<>|!=/
-		ex = '==='
-		nx = '!=='
+		lt						= '<'
+		le						= '<='
+		gt						= '>'
+		ge						= '>='
+		eq						= '=='
+		ne						= /<>|!=/
+		ex						= '==='
+		nx						= '!=='
 
-		single_quoted_string = /\x27(\\\\|\\\x27|.|[\r\n])*?\x27/
-		double_quoted_string = /"(\\\\|\\"|.|[\r\n])*?"/
+		single_quoted_string	= /\x27(\\\\|\\\x27|.|[\r\n])*?\x27/
+		double_quoted_string	= /"(\\\\|\\"|.|[\r\n])*?"/
 
-		number = /[0-9]+(\.[0-9]+)?/
+		number					= /[0-9]+(\.[0-9]+)?/
 
-		whitespace = /[ \t\n\r]+/
+		whitespace				= /[ \t\n\r]+/
 
-		id = @[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*@
+		block					= 'block'
+		endblock				= 'endblock'
+		extends					= 'extends'
+		comment					= 'comment'
+		endcomment				= 'endcomment'
 
-		html = /(\{[^%#\{]|[^\{])+/
-		whatever = /[\x00-\xff]/
+		id						= @[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*@
+
+		html					= /(\{[^%#\{]|[^\{])+/
+		whatever				= /[\x00-\xff]/
 	*/
 
 	/*!lex2php
@@ -158,7 +170,7 @@ class Pjango_lexer
 
 		variable_start			{$this->token_type = self::T_VARIABLE_START; $this->yypushstate(self::VARIABLE);}
 		block_start				{$this->token_type = self::T_BLOCK_START; $this->yypushstate(self::BLOCK);}
-		comment					{return FALSE;}
+		comment_block			{return FALSE;}
 
 		html					{$this->token_type = self::T_HTML;}
 	*/
@@ -171,6 +183,7 @@ class Pjango_lexer
 
 		variable_end			{$this->token_type = self::T_VARIABLE_END; $this->yypopstate();}
 
+		// Expressions.
 		and						{$this->token_type = self::T_AND;}
 		or						{$this->token_type = self::T_OR;}
 		xor						{$this->token_type = self::T_XOR;}
@@ -221,10 +234,18 @@ class Pjango_lexer
 
 		whitespace				{return FALSE;}
 
+		block_end				{$this->token_type = self::T_BLOCK_END; $this->yypopstate();}
+
 		single_quoted_string	{$this->token_type = self::T_SINGLE_QUOTED_STRING;}
 		double_quoted_string	{$this->token_type = self::T_DOUBLE_QUOTED_STRING;}
 
-		block_end				{$this->token_type = self::T_BLOCK_END; $this->yypopstate();}
+		block					{$this->token_type = self::T_BLOCK;}
+		endblock				{$this->token_type = self::T_ENDBLOCK;}
+		extends					{$this->token_type = self::T_EXTENDS;}
+		comment					{$this->token_type = self::T_COMMENT;}
+		endcomment				{$this->token_type = self::T_ENDCOMMENT;}
+
+		id						{$this->token_type = self::T_ID;}
 
 		whatever				{return FALSE;}
 	*/

@@ -31,6 +31,7 @@ class Pjango_compiler
 
 	private $_lexer;
 	private $_parser;
+	private $_parse_engine;
 	private $_lexer_consts;
 	private $_code;
 	private $_errors;
@@ -38,7 +39,8 @@ class Pjango_compiler
  	public function __construct()
 	{
 		$this->_lexer = new Pjango_lexer();
-		$this->_parser = new parse_engine(new Pjango_parser($this));
+		$this->_parser = new Pjango_parser($this);
+		$this->_parse_engine = new parse_engine($this->_parser);
 
 		$reflection = new ReflectionClass('Pjango_lexer');
 		$this->_lexer_consts = array();
@@ -87,13 +89,14 @@ class Pjango_compiler
 		try
 		{
 			$continue = $this->_lexer->init(file_get_contents($file));
+			$this->_parse_engine->reset();
 			$this->_parser->reset();
 			while($continue)
 			{
-				$this->_parser->eat($this->_lexer_consts[$this->_lexer->token_type], $this->_lexer->value);
+				$this->_parse_engine->eat($this->_lexer_consts[$this->_lexer->token_type], $this->_lexer->value);
 				$continue = $this->_lexer->yylex();
 			}
-			$this->_parser->eat_eof();
+			$this->_parse_engine->eat_eof();
 			$this->_print_code();
 		}
 		catch(parse_error $e)

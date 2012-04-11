@@ -24,10 +24,17 @@ require(__DIR__.'/base_parser.php');
 class Pjango_parser extends Pjango_base_parser
 {
 	private $_compiler;
+	private $_escape;
 
 	public function __construct(&$compiler)
 	{
 		$this->_compiler = & $compiler;
+		$this->reset();
+	}
+
+	public function reset()
+	{
+		$this->_escape = array(TRUE);
 	}
 
 	protected function _parse_filtered_expression($expression, $filters)

@@ -27,6 +27,8 @@ class Pjango_lexer
 	const T_VARIABLE_END			= 101;
 	const T_BLOCK_START				= 102;
 	const T_BLOCK_END				= 103;
+	const T_BLOCK					= 104;
+	const T_ENDBLOCK				= 105;
 
 	const T_PLUS					= 200;
 	const T_MINUS					= 201;
@@ -68,6 +70,10 @@ class Pjango_lexer
 	const T_SINGLE_QUOTED_STRING	= 600;
 	const T_DOUBLE_QUOTED_STRING	= 601;
 	const T_NUMBER					= 602;
+
+	const T_EXTENDS					= 700;
+	const T_COMMENT					= 701;
+	const T_ENDCOMMENT				= 702;
 
 	private $_counter;
 	private $_data;
@@ -541,15 +547,21 @@ $this->token_type = self::T_ID;    }
     {
         $tokenMap = array (
               1 => 0,
-              2 => 1,
-              4 => 1,
-              6 => 0,
+              2 => 0,
+              3 => 1,
+              5 => 1,
               7 => 0,
+              8 => 0,
+              9 => 0,
+              10 => 0,
+              11 => 0,
+              12 => 0,
+              13 => 0,
             );
         if ($this->_counter >= strlen($this->_data)) {
             return false; // end of input
         }
-        $yy_global_pattern = '/\G([ \t\n\r]+)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G(%\\})|\G([\x00-\xff])/';
+        $yy_global_pattern = '/\G([ \t\n\r]+)|\G(%\\})|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])/';
 
         do {
             if (preg_match($yy_global_pattern,$this->_data, $yymatches, null, $this->_counter)) {
@@ -590,11 +602,17 @@ $this->token_type = self::T_ID;    }
                     continue;
                 } else {
                     $yy_yymore_patterns = array(
-        1 => array(0, "\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G(%\\})|\G([\x00-\xff])"),
-        2 => array(1, "\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G(%\\})|\G([\x00-\xff])"),
-        4 => array(2, "\G(%\\})|\G([\x00-\xff])"),
-        6 => array(2, "\G([\x00-\xff])"),
-        7 => array(2, ""),
+        1 => array(0, "\G(%\\})|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        2 => array(0, "\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        3 => array(1, "\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        5 => array(2, "\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        7 => array(2, "\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        8 => array(2, "\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        9 => array(2, "\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        10 => array(2, "\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        11 => array(2, "\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
+        12 => array(2, "\G([\x00-\xff])"),
+        13 => array(2, ""),
     );
 
                     // yymore is needed
@@ -656,14 +674,32 @@ $this->token_type = self::T_ID;    }
 return FALSE;    }
     function yy_r3_2($yy_subpatterns)
     {
+$this->token_type = self::T_BLOCK_END; $this->yypopstate();    }
+    function yy_r3_3($yy_subpatterns)
+    {
 $this->token_type = self::T_SINGLE_QUOTED_STRING;    }
-    function yy_r3_4($yy_subpatterns)
+    function yy_r3_5($yy_subpatterns)
     {
 $this->token_type = self::T_DOUBLE_QUOTED_STRING;    }
-    function yy_r3_6($yy_subpatterns)
-    {
-$this->token_type = self::T_BLOCK_END; $this->yypopstate();    }
     function yy_r3_7($yy_subpatterns)
+    {
+$this->token_type = self::T_BLOCK;    }
+    function yy_r3_8($yy_subpatterns)
+    {
+$this->token_type = self::T_ENDBLOCK;    }
+    function yy_r3_9($yy_subpatterns)
+    {
+$this->token_type = self::T_EXTENDS;    }
+    function yy_r3_10($yy_subpatterns)
+    {
+$this->token_type = self::T_COMMENT;    }
+    function yy_r3_11($yy_subpatterns)
+    {
+$this->token_type = self::T_ENDCOMMENT;    }
+    function yy_r3_12($yy_subpatterns)
+    {
+$this->token_type = self::T_ID;    }
+    function yy_r3_13($yy_subpatterns)
     {
 return FALSE;    }
 
