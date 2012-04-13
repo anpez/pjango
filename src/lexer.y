@@ -74,6 +74,9 @@ class Pjango_lexer
 	const T_EXTENDS					= 700;
 	const T_COMMENT					= 701;
 	const T_ENDCOMMENT				= 702;
+	const T_IF						= 703;
+	const T_ELSE					= 704;
+	const T_ENDIF					= 705;
 
 	private $_counter;
 	private $_data;
@@ -152,11 +155,15 @@ class Pjango_lexer
 
 		whitespace				= /[ \t\n\r]+/
 
+		// Blocks
 		block					= 'block'
 		endblock				= 'endblock'
 		extends					= 'extends'
 		comment					= 'comment'
 		endcomment				= 'endcomment'
+		if						= 'if'
+		else					= 'else'
+		endif					= 'endif'
 
 		id						= @[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*@
 
@@ -245,9 +252,53 @@ class Pjango_lexer
 		comment					{$this->token_type = self::T_COMMENT;}
 		endcomment				{$this->token_type = self::T_ENDCOMMENT;}
 
-		id						{$this->token_type = self::T_ID;}
+		if						{$this->token_type = self::T_IF;}
+		else					{$this->token_type = self::T_ELSE;}
+		endif					{$this->token_type = self::T_ENDIF;}
 
-		whatever				{return FALSE;}
+		// Expressions.
+		and						{$this->token_type = self::T_AND;}
+		or						{$this->token_type = self::T_OR;}
+		xor						{$this->token_type = self::T_XOR;}
+		not_inx					{$this->token_type = self::T_NOT_INX;}
+		not_in					{$this->token_type = self::T_NOT_IN;}
+		not						{$this->token_type = self::T_NOT;}
+		inx						{$this->token_type = self::T_INX;}
+		in						{$this->token_type = self::T_IN;}
+
+		question				{$this->token_type = self::T_QUESTION;}
+
+		pipe					{$this->token_type = self::T_PIPE;}
+		colon					{$this->token_type = self::T_COLON;}
+		left_bracket			{$this->token_type = self::T_LEFT_BRACKET;}
+		right_bracket			{$this->token_type = self::T_RIGHT_BRACKET;}
+		dot						{$this->token_type = self::T_DOT;}
+		arrow					{$this->token_type = self::T_ARROW;}
+		left_brace				{$this->token_type = self::T_LEFT_BRACE;}
+		right_brace				{$this->token_type = self::T_RIGHT_BRACE;}
+		left_paren				{$this->token_type = self::T_LEFT_PAREN;}
+		right_paren				{$this->token_type = self::T_RIGHT_PAREN;}
+
+		plus					{$this->token_type = self::T_PLUS;}
+		minus					{$this->token_type = self::T_MINUS;}
+		multiplication			{$this->token_type = self::T_MULTIPLICATION;}
+		division				{$this->token_type = self::T_DIVISION;}
+		modulus					{$this->token_type = self::T_MODULUS;}
+
+		le						{$this->token_type = self::T_LE;}
+		lt						{$this->token_type = self::T_LT;}
+		ge						{$this->token_type = self::T_GE;}
+		gt						{$this->token_type = self::T_GT;}
+		ex						{$this->token_type = self::T_EX;}
+		nx						{$this->token_type = self::T_NX;}
+		eq						{$this->token_type = self::T_EQ;}
+		ne						{$this->token_type = self::T_NE;}
+
+		single_quoted_string	{$this->token_type = self::T_SINGLE_QUOTED_STRING;}
+		double_quoted_string	{$this->token_type = self::T_DOUBLE_QUOTED_STRING;}
+		number					{$this->token_type = self::T_NUMBER;}
+
+		id						{$this->token_type = self::T_ID;}
 	*/
 }
 

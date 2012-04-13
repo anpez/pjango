@@ -74,6 +74,9 @@ class Pjango_lexer
 	const T_EXTENDS					= 700;
 	const T_COMMENT					= 701;
 	const T_ENDCOMMENT				= 702;
+	const T_IF						= 703;
+	const T_ELSE					= 704;
+	const T_ENDIF					= 705;
 
 	private $_counter;
 	private $_data;
@@ -557,11 +560,48 @@ $this->token_type = self::T_ID;    }
               11 => 0,
               12 => 0,
               13 => 0,
+              14 => 0,
+              15 => 1,
+              17 => 1,
+              19 => 1,
+              21 => 1,
+              23 => 1,
+              25 => 1,
+              27 => 1,
+              29 => 1,
+              31 => 0,
+              32 => 0,
+              33 => 0,
+              34 => 0,
+              35 => 0,
+              36 => 0,
+              37 => 0,
+              38 => 0,
+              39 => 0,
+              40 => 0,
+              41 => 0,
+              42 => 0,
+              43 => 0,
+              44 => 0,
+              45 => 0,
+              46 => 0,
+              47 => 0,
+              48 => 0,
+              49 => 0,
+              50 => 0,
+              51 => 0,
+              52 => 0,
+              53 => 0,
+              54 => 0,
+              55 => 1,
+              57 => 1,
+              59 => 1,
+              61 => 0,
             );
         if ($this->_counter >= strlen($this->_data)) {
             return false; // end of input
         }
-        $yy_global_pattern = '/\G([ \t\n\r]+)|\G(%\\})|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])/';
+        $yy_global_pattern = '/\G([ \t\n\r]+)|\G(%\\})|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)/';
 
         do {
             if (preg_match($yy_global_pattern,$this->_data, $yymatches, null, $this->_counter)) {
@@ -602,17 +642,54 @@ $this->token_type = self::T_ID;    }
                     continue;
                 } else {
                     $yy_yymore_patterns = array(
-        1 => array(0, "\G(%\\})|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        2 => array(0, "\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        3 => array(1, "\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        5 => array(2, "\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        7 => array(2, "\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        8 => array(2, "\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        9 => array(2, "\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        10 => array(2, "\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        11 => array(2, "\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|\G([\x00-\xff])"),
-        12 => array(2, "\G([\x00-\xff])"),
-        13 => array(2, ""),
+        1 => array(0, "\G(%\\})|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        2 => array(0, "\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        3 => array(1, "\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        5 => array(2, "\G([bB][lL][oO][cC][kK])|\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        7 => array(2, "\G([eE][nN][dD][bB][lL][oO][cC][kK])|\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        8 => array(2, "\G([eE][xX][tT][eE][nN][dD][sS])|\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        9 => array(2, "\G([cC][oO][mM][mM][eE][nN][tT])|\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        10 => array(2, "\G([eE][nN][dD][cC][oO][mM][mM][eE][nN][tT])|\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        11 => array(2, "\G([iI][fF])|\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        12 => array(2, "\G([eE][lL][sS][eE])|\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        13 => array(2, "\G([eE][nN][dD][iI][fF])|\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        14 => array(2, "\G((&&|and|AND))|\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        15 => array(3, "\G((\\|\\||or|OR))|\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        17 => array(4, "\G((xor|XOR))|\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        19 => array(5, "\G((not inx|NOT INX))|\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        21 => array(6, "\G((not in|NOT IN))|\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        23 => array(7, "\G((!|not|NOT))|\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        25 => array(8, "\G((inx|INX))|\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        27 => array(9, "\G((in|IN))|\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        29 => array(10, "\G(\\?)|\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        31 => array(10, "\G(\\|)|\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        32 => array(10, "\G(:)|\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        33 => array(10, "\G(\\[)|\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        34 => array(10, "\G(\\])|\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        35 => array(10, "\G(\\.)|\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        36 => array(10, "\G(->)|\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        37 => array(10, "\G(\\{)|\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        38 => array(10, "\G(\\})|\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        39 => array(10, "\G(\\()|\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        40 => array(10, "\G(\\))|\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        41 => array(10, "\G(\\+)|\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        42 => array(10, "\G(-)|\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        43 => array(10, "\G(\\*)|\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        44 => array(10, "\G(\/)|\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        45 => array(10, "\G(%)|\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        46 => array(10, "\G(<=)|\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        47 => array(10, "\G(<)|\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        48 => array(10, "\G(>=)|\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        49 => array(10, "\G(>)|\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        50 => array(10, "\G(===)|\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        51 => array(10, "\G(!==)|\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        52 => array(10, "\G(==)|\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        53 => array(10, "\G(<>|!=)|\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        54 => array(10, "\G(\x27(\\\\\\\\|\\\\\x27|.|[\r\n])*?\x27)|\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        55 => array(11, "\G(\"(\\\\\\\\|\\\\\"|.|[\r\n])*?\")|\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        57 => array(12, "\G([0-9]+(\\.[0-9]+)?)|\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        59 => array(13, "\G([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"),
+        61 => array(13, ""),
     );
 
                     // yymore is needed
@@ -698,10 +775,121 @@ $this->token_type = self::T_COMMENT;    }
 $this->token_type = self::T_ENDCOMMENT;    }
     function yy_r3_12($yy_subpatterns)
     {
-$this->token_type = self::T_ID;    }
+$this->token_type = self::T_IF;    }
     function yy_r3_13($yy_subpatterns)
     {
-return FALSE;    }
+$this->token_type = self::T_ELSE;    }
+    function yy_r3_14($yy_subpatterns)
+    {
+$this->token_type = self::T_ENDIF;    }
+    function yy_r3_15($yy_subpatterns)
+    {
+$this->token_type = self::T_AND;    }
+    function yy_r3_17($yy_subpatterns)
+    {
+$this->token_type = self::T_OR;    }
+    function yy_r3_19($yy_subpatterns)
+    {
+$this->token_type = self::T_XOR;    }
+    function yy_r3_21($yy_subpatterns)
+    {
+$this->token_type = self::T_NOT_INX;    }
+    function yy_r3_23($yy_subpatterns)
+    {
+$this->token_type = self::T_NOT_IN;    }
+    function yy_r3_25($yy_subpatterns)
+    {
+$this->token_type = self::T_NOT;    }
+    function yy_r3_27($yy_subpatterns)
+    {
+$this->token_type = self::T_INX;    }
+    function yy_r3_29($yy_subpatterns)
+    {
+$this->token_type = self::T_IN;    }
+    function yy_r3_31($yy_subpatterns)
+    {
+$this->token_type = self::T_QUESTION;    }
+    function yy_r3_32($yy_subpatterns)
+    {
+$this->token_type = self::T_PIPE;    }
+    function yy_r3_33($yy_subpatterns)
+    {
+$this->token_type = self::T_COLON;    }
+    function yy_r3_34($yy_subpatterns)
+    {
+$this->token_type = self::T_LEFT_BRACKET;    }
+    function yy_r3_35($yy_subpatterns)
+    {
+$this->token_type = self::T_RIGHT_BRACKET;    }
+    function yy_r3_36($yy_subpatterns)
+    {
+$this->token_type = self::T_DOT;    }
+    function yy_r3_37($yy_subpatterns)
+    {
+$this->token_type = self::T_ARROW;    }
+    function yy_r3_38($yy_subpatterns)
+    {
+$this->token_type = self::T_LEFT_BRACE;    }
+    function yy_r3_39($yy_subpatterns)
+    {
+$this->token_type = self::T_RIGHT_BRACE;    }
+    function yy_r3_40($yy_subpatterns)
+    {
+$this->token_type = self::T_LEFT_PAREN;    }
+    function yy_r3_41($yy_subpatterns)
+    {
+$this->token_type = self::T_RIGHT_PAREN;    }
+    function yy_r3_42($yy_subpatterns)
+    {
+$this->token_type = self::T_PLUS;    }
+    function yy_r3_43($yy_subpatterns)
+    {
+$this->token_type = self::T_MINUS;    }
+    function yy_r3_44($yy_subpatterns)
+    {
+$this->token_type = self::T_MULTIPLICATION;    }
+    function yy_r3_45($yy_subpatterns)
+    {
+$this->token_type = self::T_DIVISION;    }
+    function yy_r3_46($yy_subpatterns)
+    {
+$this->token_type = self::T_MODULUS;    }
+    function yy_r3_47($yy_subpatterns)
+    {
+$this->token_type = self::T_LE;    }
+    function yy_r3_48($yy_subpatterns)
+    {
+$this->token_type = self::T_LT;    }
+    function yy_r3_49($yy_subpatterns)
+    {
+$this->token_type = self::T_GE;    }
+    function yy_r3_50($yy_subpatterns)
+    {
+$this->token_type = self::T_GT;    }
+    function yy_r3_51($yy_subpatterns)
+    {
+$this->token_type = self::T_EX;    }
+    function yy_r3_52($yy_subpatterns)
+    {
+$this->token_type = self::T_NX;    }
+    function yy_r3_53($yy_subpatterns)
+    {
+$this->token_type = self::T_EQ;    }
+    function yy_r3_54($yy_subpatterns)
+    {
+$this->token_type = self::T_NE;    }
+    function yy_r3_55($yy_subpatterns)
+    {
+$this->token_type = self::T_SINGLE_QUOTED_STRING;    }
+    function yy_r3_57($yy_subpatterns)
+    {
+$this->token_type = self::T_DOUBLE_QUOTED_STRING;    }
+    function yy_r3_59($yy_subpatterns)
+    {
+$this->token_type = self::T_NUMBER;    }
+    function yy_r3_61($yy_subpatterns)
+    {
+$this->token_type = self::T_ID;    }
 
 }
 
