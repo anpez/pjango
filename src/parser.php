@@ -41,11 +41,37 @@ class Pjango_parser extends Pjango_base_parser
 	{
 		foreach($filters as $filter)
 		{
-			array_unshift($filter['parameters'], $expression);
-			$expression = $filter['name'].'('.implode(', ', $filter['parameters']).')';
+			$parameters = array();
+			foreach($filter['parameters'] as $param)
+			{
+				$parameters[] = $param['expression'];
+			}
+			array_unshift($parameters, $expression['expression']);
+			$expression['expression'] = $filter['name'].'('.implode(', ', $parameters).')';
+
+			$parameters = array();
+			foreach($filter['parameters'] as $param)
+			{
+				$parameters[] = $param['safe_expression'];
+			}
+			array_unshift($parameters, $expression['safe_expression']);
+			$expression['safe_expression'] = $filter['name'].'('.implode(', ', $parameters).')';
 		}
 
 		return $expression;
+	}
+
+	protected function _code_line($type, $parameters = array())
+	{
+		return array('name' => $type, 'parameters' => $parameters);
+	}
+
+	protected function _code($program)
+	{
+		foreach($program as $code)
+		{
+			call_user_func_array(array($this->_compiler, 'code_'.$code['name']), $code['parameters'] );
+		}
 	}
 }
 

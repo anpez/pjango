@@ -26,8 +26,21 @@ require(__DIR__.'/transcriber.php');
 
 class Pjango_compiler
 {
-	const CODE_HTML		= 0;
-	const CODE_VARIABLE	= 1;
+	const CODE_HTML			= 0;
+	const CODE_VARIABLE		= 1;
+
+	const CODE_IF			= 2;
+	const CODE_ELSE_IF		= 3;
+	const CODE_ELSE			= 4;
+	const CODE_ENDIF		= 5;
+
+	const CODE_START_BLOCK	= 6;
+	const CODE_END_BLOCK	= 7;
+
+	const CODE_FOR			= 8;
+	const CODE_FOR_EMPTY	= 9;
+	const CODE_EMPTY		= 10;
+	const CODE_ENDFOR		= 11;
 
 	private $_lexer;
 	private $_parser;
@@ -93,6 +106,8 @@ class Pjango_compiler
 			$this->_parser->reset();
 			while($continue)
 			{
+//				echo $this->_lexer->value;
+//				var_dump($this->_lexer_consts[$this->_lexer->token_type], $this->_lexer->value);
 				$this->_parse_engine->eat($this->_lexer_consts[$this->_lexer->token_type], $this->_lexer->value);
 				$continue = $this->_lexer->yylex();
 			}
@@ -108,6 +123,67 @@ class Pjango_compiler
 			print_r($e);
 		}
 	}
+
+	public function code_html($html)
+	{
+		$this->_code(self::CODE_HTML, $html);
+	}
+
+	public function code_variable($expression)
+	{
+		$this->_code(self::CODE_VARIABLE, $expression);
+	}
+
+	public function code_if($expression)
+	{
+		$this->_code(self::CODE_IF, $expression);
+	}
+
+	public function code_else_if($expression)
+	{
+		$this->_code(self::CODE_ELSE_IF, $expression);
+	}
+
+	public function code_else()
+	{
+		$this->_code(self::CODE_ELSE);
+	}
+
+	public function code_end_if()
+	{
+		$this->_code(self::CODE_ENDIF);
+	}
+
+	public function code_start_block($name)
+	{
+		$this->_code(self::CODE_START_BLOCK, $name);
+	}
+
+	public function code_end_block($name)
+	{
+		$this->_code(self::CODE_END_BLOCK, $name);
+	}
+
+	public function code_for($id, $expression)
+	{
+		$this->_code(self::CODE_FOR, $id, $expression);
+	}
+
+	public function code_for_empty($id, $expression)
+	{
+		$this->_code(self::CODE_FOR_EMPTY, $id, $expression);
+	}
+
+	public function code_empty()
+	{
+		$this->_code(self::CODE_EMPTY);
+	}
+
+	public function code_end_for()
+	{
+		$this->_code(self::CODE_ENDFOR);
+	}
+
 }
 
 /* End of file src/compiler.php */

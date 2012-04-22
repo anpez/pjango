@@ -38,13 +38,15 @@ class Pjango_lexer
 
 	const T_AND						= 300;
 	const T_OR						= 301;
-	const T_XOR						= 302;
-	const T_NOT_INX					= 303;
-	const T_NOT_IN					= 304;
-	const T_NOT						= 305;
-	const T_INX						= 306;
-	const T_IN						= 307;
-	const T_QUESTION				= 308;
+	const T_AND_SYMBOL				= 302;
+	const T_OR_SYMBOL				= 303;
+	const T_XOR						= 304;
+	const T_NOT_INX					= 305;
+	const T_NOT_IN					= 306;
+	const T_NOT						= 307;
+	const T_INX						= 308;
+	const T_IN						= 309;
+	const T_QUESTION				= 310;
 
 	const T_LT						= 400;
 	const T_LE						= 401;
@@ -70,6 +72,8 @@ class Pjango_lexer
 	const T_SINGLE_QUOTED_STRING	= 600;
 	const T_DOUBLE_QUOTED_STRING	= 601;
 	const T_NUMBER					= 602;
+	const T_TRUE					= 603;
+	const T_FALSE					= 604;
 
 	const T_EXTENDS					= 700;
 	const T_COMMENT					= 701;
@@ -77,6 +81,10 @@ class Pjango_lexer
 	const T_IF						= 703;
 	const T_ELSE					= 704;
 	const T_ENDIF					= 705;
+
+	const T_FOR						= 706;
+	const T_EMPTY					= 707;
+	const T_ENDFOR					= 708;
 
 	private $_counter;
 	private $_data;
@@ -109,14 +117,19 @@ class Pjango_lexer
 		comment_block			= /\{#(\\#\}|.|[\r\n])*?#\}/
 
 		// Logic operators
-		and						= /(&&|and|AND)/
-		or						= /(\|\||or|OR)/
-		xor						= /(xor|XOR)/
-		not_inx					= /(not inx|NOT INX)/
-		not_in					= /(not in|NOT IN)/
-		not						= /(!|not|NOT)/
-		inx						= /(inx|INX)/
-		in						= /(in|IN)/
+		and						= /[Aa][Nn][Dd]/
+		or						= /[Oo][Rr]/
+		and_symbol				= '&&'
+		or_symbol				= '||'
+		xor						= /[Xx][Oo][Rr]/
+		not_inx					= /[Nn][Oo][Tt] [Ii][Nn][Xx]/
+		not_in					= /[Nn][Oo][Tt] [Ii][Nn]/
+		not						= /(!|[Nn][Oo][Tt])/
+		inx						= /[Ii][Nn][Xx]/
+		in						= /[Ii][Nn]/
+
+		true					= /[Tt][Rr][Uu][Ee]/
+		false					= /[Ff][Aa][Ll][Ss][Ee]/
 
 		question				= '?'
 
@@ -156,14 +169,18 @@ class Pjango_lexer
 		whitespace				= /[ \t\n\r]+/
 
 		// Blocks
-		block					= 'block'
-		endblock				= 'endblock'
-		extends					= 'extends'
-		comment					= 'comment'
-		endcomment				= 'endcomment'
-		if						= 'if'
-		else					= 'else'
-		endif					= 'endif'
+		block					= /[Bb][Ll][Oo][Cc][Kk]/
+		endblock				= /[Ee][Nn][Dd][Bb][Ll][Oo][Cc][Kk]/
+		extends					= /[Ee][Xx][Tt][Ee][Nn][Dd][Ss]/
+		comment					= /[Cc][Oo][Mm][Ee][Nn][Tt]/
+		endcomment				= /[Ee][Nn][Dd][Cc][Oo][Mm][Ee][Nn][Tt]/
+		if						= /[Ii][Ff]/
+		else					= /[Ee][Ll][Ss][Ee]/
+		endif					= /[Ee][Nn][Dd][Ii][Ff]/
+
+		for						= /[Ff][Oo][Rr]/
+		empty					= /[Ee][Mm][Pp][Tt][Yy]/
+		endfor					= /[Ee][Nn][Dd][Ff][Oo][Rr]/
 
 		id						= @[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*@
 
@@ -193,12 +210,17 @@ class Pjango_lexer
 		// Expressions.
 		and						{$this->token_type = self::T_AND;}
 		or						{$this->token_type = self::T_OR;}
+		and_symbol				{$this->token_type = self::T_AND_SYMBOL;}
+		or_symbol				{$this->token_type = self::T_OR_SYMBOL;}
 		xor						{$this->token_type = self::T_XOR;}
 		not_inx					{$this->token_type = self::T_NOT_INX;}
 		not_in					{$this->token_type = self::T_NOT_IN;}
 		not						{$this->token_type = self::T_NOT;}
 		inx						{$this->token_type = self::T_INX;}
 		in						{$this->token_type = self::T_IN;}
+
+		true					{$this->token_type = self::T_TRUE;}
+		false					{$this->token_type = self::T_FALSE;}
 
 		question				{$this->token_type = self::T_QUESTION;}
 
@@ -256,15 +278,24 @@ class Pjango_lexer
 		else					{$this->token_type = self::T_ELSE;}
 		endif					{$this->token_type = self::T_ENDIF;}
 
+		for						{$this->token_type = self::T_FOR;}
+		empty					{$this->token_type = self::T_EMPTY;}
+		endfor					{$this->token_type = self::T_ENDFOR;}
+
 		// Expressions.
 		and						{$this->token_type = self::T_AND;}
 		or						{$this->token_type = self::T_OR;}
+		and_symbol				{$this->token_type = self::T_AND_SYMBOL;}
+		or_symbol				{$this->token_type = self::T_OR_SYMBOL;}
 		xor						{$this->token_type = self::T_XOR;}
 		not_inx					{$this->token_type = self::T_NOT_INX;}
 		not_in					{$this->token_type = self::T_NOT_IN;}
 		not						{$this->token_type = self::T_NOT;}
 		inx						{$this->token_type = self::T_INX;}
 		in						{$this->token_type = self::T_IN;}
+
+		true					{$this->token_type = self::T_TRUE;}
+		false					{$this->token_type = self::T_FALSE;}
 
 		question				{$this->token_type = self::T_QUESTION;}
 

@@ -52,6 +52,36 @@ class Pjango_transcriber
 				case Pjango_compiler::CODE_VARIABLE:
 					echo $code[$i][1];
 					break;
+				case Pjango_compiler::CODE_IF:
+					echo 'if ('.$code[$i][1].') {';
+					break;
+				case Pjango_compiler::CODE_ELSE_IF:
+					echo '} else if ('.$code[$i][1].') {';
+					break;
+				case Pjango_compiler::CODE_ELSE:
+					echo '} else {';
+					break;
+				case Pjango_compiler::CODE_ENDIF:
+					echo '}';
+					break;
+				case Pjango_compiler::CODE_START_BLOCK:
+					echo 'function block_'.$code[$i][1].'() {';
+					break;
+				case Pjango_compiler::CODE_END_BLOCK:
+					echo '}';
+					break;
+				case Pjango_compiler::CODE_FOR:
+					echo 'foreach('.$code[$i][2]['safe_expression'].' as '.$code[$i][1].') {';
+					break;
+				case Pjango_compiler::CODE_FOR_EMPTY:
+					echo '$_tmp = '.$code[$i][2]['safe_expression'].'; if ($_tmp) {foreach($_tmp as '.$code[$i][1].') {';
+					break;
+				case Pjango_compiler::CODE_EMPTY:
+					echo '} else {';
+					break;
+				case Pjango_compiler::CODE_ENDFOR:
+					echo '}';
+					break;
 				default:
 					echo 'Unexpected code: ';
 					self::debug(array($code[$i]));
