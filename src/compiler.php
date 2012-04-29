@@ -29,18 +29,21 @@ class Pjango_compiler
 	const CODE_HTML			= 0;
 	const CODE_VARIABLE		= 1;
 
-	const CODE_IF			= 2;
-	const CODE_ELSE_IF		= 3;
-	const CODE_ELSE			= 4;
-	const CODE_ENDIF		= 5;
+	const CODE_START_BLOCK	= 2;
+	const CODE_END_BLOCK	= 3;
 
-	const CODE_START_BLOCK	= 6;
-	const CODE_END_BLOCK	= 7;
+	const CODE_IF			= 4;
+	const CODE_ELSE_IF		= 5;
+	const CODE_ELSE			= 6;
+	const CODE_ENDIF		= 7;
 
-	const CODE_FOR			= 8;
-	const CODE_FOR_EMPTY	= 9;
-	const CODE_EMPTY		= 10;
-	const CODE_ENDFOR		= 11;
+	const CODE_EXTENDS		= 8;
+	const CODE_EXTENDS_VAR	= 9;
+
+	const CODE_FOR			= 10;
+	const CODE_FOR_EMPTY	= 11;
+	const CODE_EMPTY		= 12;
+	const CODE_ENDFOR		= 13;
 
 	private $_lexer;
 	private $_parser;
@@ -184,6 +187,15 @@ class Pjango_compiler
 		$this->_code(self::CODE_ENDFOR);
 	}
 
+	public function code_extends($base)
+	{
+		$this->_code(self::CODE_EXTENDS, $base);
+	}
+
+	public function code_extends_var($base)
+	{
+		$this->_code(self::CODE_EXTENDS_VAR, $base);
+	}
 }
 
 /* End of file src/compiler.php */

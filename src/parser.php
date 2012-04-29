@@ -23,6 +23,42 @@ require(__DIR__.'/base_parser.php');
 
 class Pjango_parser extends Pjango_base_parser
 {
+	const T_OR = -100;
+	const T_XOR = -101;
+	const T_AND = -102;
+	const T_TERNARY_IF = -103;
+	const T_OR_SYMBOL = 4;
+	const T_AND_SYMBOL = 5;
+	const T_EQ = 6;
+	const T_NE = 7;
+	const T_EX = 8;
+	const T_NX = 9;
+	const T_LT = 10;
+	const T_LE = 11;
+	const T_GT = 12;
+	const T_GE = 13;
+	const T_IN = 14;
+	const T_NOT_IN = 15;
+	const T_INX = 16;
+	const T_NOT_INX = 17;
+	const T_PLUS = 18;
+	const T_MINUS = 19;
+	const T_MULTIPLICATION = 20;
+	const T_DIVISION = 21;
+	const T_MODULUS = 22;
+	const T_NOT = 23;
+	const T_UNARY_MINUS = 24;
+	const T_PARENS = 25;
+	const T_VARIABLE = 26;
+	const T_NUMBER = 27;
+	const T_SINGLE_QUOTED_STRING = 28;
+	const T_DOUBLE_QUOTED_STRING = 29;
+	const T_TRUE = 30;
+	const T_FALSE = 31;
+	const T_ARRAY = 32;
+	const T_BRACED_OBJECT = 33;
+	const T_OBJECT = 34;
+
 	private $_compiler;
 	private $_escape;
 
@@ -35,30 +71,6 @@ class Pjango_parser extends Pjango_base_parser
 	public function reset()
 	{
 		$this->_escape = array(TRUE);
-	}
-
-	protected function _parse_filtered_expression($expression, $filters)
-	{
-		foreach($filters as $filter)
-		{
-			$parameters = array();
-			foreach($filter['parameters'] as $param)
-			{
-				$parameters[] = $param['expression'];
-			}
-			array_unshift($parameters, $expression['expression']);
-			$expression['expression'] = $filter['name'].'('.implode(', ', $parameters).')';
-
-			$parameters = array();
-			foreach($filter['parameters'] as $param)
-			{
-				$parameters[] = $param['safe_expression'];
-			}
-			array_unshift($parameters, $expression['safe_expression']);
-			$expression['safe_expression'] = $filter['name'].'('.implode(', ', $parameters).')';
-		}
-
-		return $expression;
 	}
 
 	protected function _code_line($type, $parameters = array())

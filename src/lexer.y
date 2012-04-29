@@ -67,7 +67,8 @@ class Pjango_lexer
 	const T_LEFT_PAREN				= 507;
 	const T_RIGHT_PAREN				= 508;
 	const T_DOT						= 509;
-	const T_ARROW					= 510;
+	const T_COMMA					= 510;
+	const T_ARROW					= 511;
 
 	const T_SINGLE_QUOTED_STRING	= 600;
 	const T_DOUBLE_QUOTED_STRING	= 601;
@@ -76,15 +77,21 @@ class Pjango_lexer
 	const T_FALSE					= 604;
 
 	const T_EXTENDS					= 700;
-	const T_COMMENT					= 701;
-	const T_ENDCOMMENT				= 702;
-	const T_IF						= 703;
-	const T_ELSE					= 704;
-	const T_ENDIF					= 705;
+	const T_INCLUDE					= 701;
+	const T_COMMENT					= 702;
+	const T_ENDCOMMENT				= 703;
+	const T_IF						= 704;
+	const T_ELSE					= 705;
+	const T_ENDIF					= 706;
 
-	const T_FOR						= 706;
-	const T_EMPTY					= 707;
-	const T_ENDFOR					= 708;
+	const T_FOR						= 707;
+	const T_EMPTY					= 708;
+	const T_ENDFOR					= 709;
+
+	const T_AUTOESCAPE				= 710;
+	const T_ENDAUTOESCAPE			= 711;
+	const T_ON						= 712;
+	const T_OFF						= 713;
 
 	private $_counter;
 	private $_data;
@@ -138,6 +145,7 @@ class Pjango_lexer
 		left_bracket			= '['
 		right_bracket			= ']'
 		dot						= '.'
+		comma					= ','
 		arrow					= '->'
 		left_brace				= '{'
 		right_brace				= '}'
@@ -172,6 +180,7 @@ class Pjango_lexer
 		block					= /[Bb][Ll][Oo][Cc][Kk]/
 		endblock				= /[Ee][Nn][Dd][Bb][Ll][Oo][Cc][Kk]/
 		extends					= /[Ee][Xx][Tt][Ee][Nn][Dd][Ss]/
+		include					= /[Ii][Nn][Cc][Ll][Uu][Dd][Ee]/
 		comment					= /[Cc][Oo][Mm][Ee][Nn][Tt]/
 		endcomment				= /[Ee][Nn][Dd][Cc][Oo][Mm][Ee][Nn][Tt]/
 		if						= /[Ii][Ff]/
@@ -181,6 +190,11 @@ class Pjango_lexer
 		for						= /[Ff][Oo][Rr]/
 		empty					= /[Ee][Mm][Pp][Tt][Yy]/
 		endfor					= /[Ee][Nn][Dd][Ff][Oo][Rr]/
+
+		autoescape				= /[Aa][Uu][Tt][Oo][Ee][Ss][Cc][Aa][Pp][Ee]/
+		endautoescape			= /[Ee][Nn][Dd][Aa][Uu][Tt][Oo][Ee][Ss][Cc][Aa][Pp][Ee]/
+		on						= /[Oo][Nn]/
+		off						= /[Oo][Ff][Ff]/
 
 		id						= @[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*@
 
@@ -271,6 +285,7 @@ class Pjango_lexer
 		block					{$this->token_type = self::T_BLOCK;}
 		endblock				{$this->token_type = self::T_ENDBLOCK;}
 		extends					{$this->token_type = self::T_EXTENDS;}
+		include					{$this->token_type = self::T_INCLUDE;}
 		comment					{$this->token_type = self::T_COMMENT;}
 		endcomment				{$this->token_type = self::T_ENDCOMMENT;}
 
@@ -281,6 +296,11 @@ class Pjango_lexer
 		for						{$this->token_type = self::T_FOR;}
 		empty					{$this->token_type = self::T_EMPTY;}
 		endfor					{$this->token_type = self::T_ENDFOR;}
+
+		autoescape				{$this->token_type = self::T_AUTOESCAPE;}
+		endautoescape			{$this->token_type = self::T_ENDAUTOESCAPE;}
+		on						{$this->token_type = self::T_ON;}
+		off						{$this->token_type = self::T_OFF;}
 
 		// Expressions.
 		and						{$this->token_type = self::T_AND;}
@@ -304,6 +324,7 @@ class Pjango_lexer
 		left_bracket			{$this->token_type = self::T_LEFT_BRACKET;}
 		right_bracket			{$this->token_type = self::T_RIGHT_BRACKET;}
 		dot						{$this->token_type = self::T_DOT;}
+		comma					{$this->token_type = self::T_COMMA;}
 		arrow					{$this->token_type = self::T_ARROW;}
 		left_brace				{$this->token_type = self::T_LEFT_BRACE;}
 		right_brace				{$this->token_type = self::T_RIGHT_BRACE;}
